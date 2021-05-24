@@ -1,0 +1,10 @@
+starttime="now-2d/d" endtime="now-1d/d" appname:bucket tag:bucket logtype:apache 
+| stats count() as ct_tranlog 
+| eval test="test" 
+| join type=left test 
+  [[ starttime="now-3d/d" endtime="now-2d/d" appname:bucket tag:bucket logtype:apache 
+   | stats count() as ct_exjcnode 
+   | eval test="test"]] 
+   | eval success_rate=format("%.4f%%",(ct_tranlog-ct_exjcnode)*100/ct_tranlog) 
+   | eval time=formatdate(now()-86400000,"yyyy/MM/dd") 
+   | fields time,ct_tranlog,ct_exjcnode,success_rate
